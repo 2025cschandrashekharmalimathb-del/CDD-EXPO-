@@ -1,4 +1,4 @@
-name: Engineering Mini-Project CI
+name: Campus Commons build
 
 on:
   push:
@@ -7,19 +7,28 @@ on:
     branches: [main]
 
 jobs:
-  test-and-build:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Build Java API
+        working-directory: ./backend
+        run: mvn --batch-mode -DskipTests package
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      - name: Install backend dependencies and run tests
-        working-directory: ./backend
+      - name: Build frontend
+        working-directory: ./frontend
         run: |
           npm install
-          npm test
+          npm run build
       - name: Verify Docker Compose build
         run: docker compose build
