@@ -966,7 +966,6 @@ function ResourceBoard({
       .then((data) => {
         setItems(data);
 
-        // Refresh the selected resource with the latest server data.
         setSelectedResource((current) => {
           if (!current) return null;
           return data.find((x) => x.id === current.id) || null;
@@ -992,6 +991,35 @@ function ResourceBoard({
       setItems((current) => [...current, row]);
       setName('');
       setNotice('Resource added to the campus board.');
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
+  // Faculty can delete a resource.
+  const deleteResource = async (item) => {
+    if (!isTeacher) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${item.name}"? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await request(`/api/resources/${item.id}`, {
+        method: 'DELETE',
+      });
+
+      setItems((current) =>
+        current.filter((x) => x.id !== item.id)
+      );
+
+      setSelectedResource((current) =>
+        current?.id === item.id ? null : current
+      );
+
+      setNotice('Resource deleted successfully.');
     } catch (e) {
       setError(e.message);
     }
@@ -1058,11 +1086,10 @@ function ResourceBoard({
       filter === 'All' || x.category === filter;
 
     const matchesSearch =
-      x.name.toLowerCase().includes(search.toLowerCase());
+      (x.name || '').toLowerCase().includes(search.toLowerCase());
 
     const matchesStatus =
-      statusFilter === 'All' ||
-      x.status === statusFilter;
+      statusFilter === 'All' || x.status === statusFilter;
 
     return matchesCategory && matchesSearch && matchesStatus;
   });
@@ -1086,7 +1113,7 @@ function ResourceBoard({
   };
 
   // ==========================================
-  // FULL-PAGE RESOURCE DETAILS VIEW
+  // RESOURCE DETAILS
   // ==========================================
 
   if (selectedResource) {
@@ -1098,7 +1125,6 @@ function ResourceBoard({
 
     return (
       <div className="resource-detail-page">
-
         <button
           type="button"
           className="btn btn-outline-secondary mb-4"
@@ -1108,16 +1134,11 @@ function ResourceBoard({
         </button>
 
         <div className="card border-0 shadow-sm overflow-hidden">
-
-          {/* Resource banner */}
           <div
             className="p-4 p-md-5"
-            style={{
-              background: 'var(--bs-tertiary-bg)',
-            }}
+            style={{ background: 'var(--bs-tertiary-bg)' }}
           >
             <div className="d-flex flex-wrap justify-content-between align-items-start gap-3">
-
               <div>
                 <span className="badge text-bg-primary mb-3">
                   {selectedResource.category}
@@ -1146,22 +1167,16 @@ function ResourceBoard({
             </div>
           </div>
 
-          {/* Resource information */}
           <div className="card-body p-4 p-md-5">
-
             <div className="row g-4">
-
               <div className="col-12 col-lg-7">
-
                 <h4 className="mb-3">
                   Resource information
                 </h4>
 
                 <div
                   className="rounded-4 p-4 mb-4"
-                  style={{
-                    background: 'var(--bs-tertiary-bg)',
-                  }}
+                  style={{ background: 'var(--bs-tertiary-bg)' }}
                 >
                   <div className="d-flex align-items-center gap-3 mb-3">
                     <span className="material-symbols-rounded fs-1">
@@ -1184,9 +1199,7 @@ function ResourceBoard({
                   </p>
                 </div>
 
-                <h5 className="mb-3">
-                  Resource details
-                </h5>
+                <h5 className="mb-3">Resource details</h5>
 
                 <div className="table-responsive">
                   <table className="table align-middle">
@@ -1220,15 +1233,11 @@ function ResourceBoard({
                     </tbody>
                   </table>
                 </div>
-
               </div>
 
-              {/* Booking information */}
               <div className="col-12 col-lg-5">
-
                 <div className="card h-100">
                   <div className="card-body p-4">
-
                     <h5 className="mb-3">
                       Booking information
                     </h5>
@@ -1259,9 +1268,7 @@ function ResourceBoard({
                       <button
                         type="button"
                         className="btn btn-primary w-100"
-                        disabled={
-                          !isAvailable && !isOwner
-                        }
+                        disabled={!isAvailable && !isOwner}
                         onClick={() => book(selectedResource)}
                       >
                         {isAvailable
@@ -1273,19 +1280,30 @@ function ResourceBoard({
                     )}
 
                     {isTeacher && (
-                      <div className="alert alert-info mb-0">
-                        Teacher view: You can monitor this resource's availability.
-                      </div>
+                      <>
+                        <div className="alert alert-info">
+                          Faculty view: You can monitor this resource's availability.
+                        </div>
+
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger w-100"
+                          onClick={() => deleteResource(selectedResource)}
+                        >
+                          <span className="material-symbols-rounded align-middle me-1">
+                            delete
+                          </span>
+                          Delete this resource
+                        </button>
+                      </>
                     )}
 
                     <p className="text-muted small mt-3 mb-0">
                       Resource reservations are processed through
                       the campus resource system.
                     </p>
-
                   </div>
                 </div>
-
               </div>
             </div>
           </div>
@@ -1298,13 +1316,12 @@ function ResourceBoard({
         >
           ← Back to Resource Board
         </button>
-
       </div>
     );
   }
 
   // ==========================================
-  // RESOURCE BOARD VIEW
+  // RESOURCE BOARD
   // ==========================================
 
   return (
@@ -1323,9 +1340,7 @@ function ResourceBoard({
         }
       />
 
-      {/* Availability overview */}
       <div className="row g-3 mb-4">
-
         <div className="col-6 col-lg-3">
           <div className="card h-100 p-3">
             <div className="text-muted small">Total resources</div>
@@ -1359,10 +1374,8 @@ function ResourceBoard({
             </h2>
           </div>
         </div>
-
       </div>
 
-      {/* Add resource */}
       {isTeacher && (
         <form className="add-resource-bar" onSubmit={add}>
           <input
@@ -1390,9 +1403,7 @@ function ResourceBoard({
         </form>
       )}
 
-      {/* Category filters and search */}
       <div className="resource-tools">
-
         <div className="filter-group">
           {[
             'All',
@@ -1417,15 +1428,10 @@ function ResourceBoard({
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-
       </div>
 
-      {/* Status filters */}
       <div className="d-flex flex-wrap gap-2 align-items-center mb-4">
-
-        <strong className="small me-2">
-          Availability:
-        </strong>
+        <strong className="small me-2">Availability:</strong>
 
         {['All', 'Available', 'Reserved', 'Unavailable'].map((x) => (
           <button
@@ -1441,17 +1447,12 @@ function ResourceBoard({
             {x}
           </button>
         ))}
-
       </div>
 
-      {/* Resource cards */}
       {loading ? (
-        <div className="loading-box">
-          Loading resources…
-        </div>
+        <div className="loading-box">Loading resources…</div>
       ) : (
         <div className="resource-grid">
-
           {shown.map((x, i) => (
             <article
               className={`resource-tile tile-${i % 4}`}
@@ -1459,7 +1460,6 @@ function ResourceBoard({
               onClick={() => setSelectedResource(x)}
               style={{ cursor: 'pointer' }}
             >
-
               <span className="material-symbols-rounded tile-art">
                 {getResourceIcon(x)}
               </span>
@@ -1471,7 +1471,6 @@ function ResourceBoard({
               <h3>{x.name}</h3>
 
               <div className="availability">
-
                 <span
                   className={
                     x.status === 'Available'
@@ -1485,7 +1484,6 @@ function ResourceBoard({
                 {x.status === 'Reserved' && x.booked_by_name
                   ? ` · ${x.booked_by_name}`
                   : ''}
-
               </div>
 
               {!isTeacher && (
@@ -1509,13 +1507,27 @@ function ResourceBoard({
                 </button>
               )}
 
+              {isTeacher && (
+                <button
+                  type="button"
+                  className="btn btn-outline-danger w-100 mt-3"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    deleteResource(x);
+                  }}
+                >
+                  <span className="material-symbols-rounded align-middle me-1">
+                    delete
+                  </span>
+                  Delete resource
+                </button>
+              )}
+
               <div className="small text-muted mt-2">
                 View full details →
               </div>
-
             </article>
           ))}
-
         </div>
       )}
 
@@ -1524,62 +1536,47 @@ function ResourceBoard({
           <span className="material-symbols-rounded">
             search_off
           </span>
-
           <h3>No resources found</h3>
           <p>Try a different search or category.</p>
         </div>
       )}
 
-      {/* Recent booking activity */}
       <section className="mt-5">
-
         <div className="d-flex justify-content-between align-items-center mb-3">
-
           <div>
             <span className="text-muted small">
               RESOURCE ACTIVITY
             </span>
-
-            <h3 className="mt-1">
-              Recent booking history
-            </h3>
+            <h3 className="mt-1">Recent booking history</h3>
           </div>
 
           <span className="badge text-bg-light">
             {activity.length} activities
           </span>
-
         </div>
 
         {activity.length === 0 ? (
           <div className="card p-4 text-center">
-
             <span className="material-symbols-rounded fs-1 text-muted">
               history
             </span>
 
-            <h5 className="mt-2">
-              No recent activity
-            </h5>
+            <h5 className="mt-2">No recent activity</h5>
 
             <p className="text-muted mb-0">
               Reservations and returns made during this session
               will appear here.
             </p>
-
           </div>
         ) : (
           <div className="card p-3">
-
             {activity.map((entry) => (
               <div
                 key={entry.id}
                 className="d-flex justify-content-between align-items-center gap-3 py-3 border-bottom"
               >
-
                 <div>
                   <strong>{entry.name}</strong>
-
                   <div className="small text-muted">
                     {entry.time}
                   </div>
@@ -1594,13 +1591,10 @@ function ResourceBoard({
                 >
                   {entry.action}
                 </span>
-
               </div>
             ))}
-
           </div>
         )}
-
       </section>
     </>
   );
@@ -1614,14 +1608,22 @@ function ResourceBoard({
 // ONLINE CLASSES
 // =====================================================
 
-function ClassRoomCard({ item, onJoin }) {
+function ClassRoomCard({
+  item,
+  onJoin,
+  isTeacher,
+  onDelete,
+}) {
   return (
     <article className="session-card">
       <div className="session-card-top">
         <span className="session-icon material-symbols-rounded">
           cast_for_education
         </span>
-        <span className="session-status">ONLINE CLASS</span>
+
+        <span className="session-status">
+          ONLINE CLASS
+        </span>
       </div>
 
       <h3>{item.title}</h3>
@@ -1631,16 +1633,33 @@ function ClassRoomCard({ item, onJoin }) {
       </p>
 
       <div className="session-date">
-        <span className="material-symbols-rounded">event</span>
+        <span className="material-symbols-rounded">
+          event
+        </span>
+
         {new Date(item.startsAt).toLocaleString()}
       </div>
 
       <button
-        className="btn btn-primary"
+        type="button"
+        className="btn btn-primary w-100"
         onClick={() => onJoin(item.meetingCode)}
       >
         Join class <span>↗</span>
       </button>
+
+      {isTeacher && (
+        <button
+          type="button"
+          className="btn btn-outline-danger w-100 mt-2"
+          onClick={() => onDelete(item)}
+        >
+          <span className="material-symbols-rounded align-middle me-1">
+            delete
+          </span>
+          Delete class
+        </button>
+      )}
     </article>
   );
 }
@@ -1657,11 +1676,13 @@ function Classroom({
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [startsAt, setStartsAt] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const load = useCallback(() => {
     return request('/api/classes')
       .then(setItems)
-      .catch((e) => setError(e.message));
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
   }, [request, setError]);
 
   useEffect(() => {
@@ -1684,7 +1705,33 @@ function Classroom({
       setTitle('');
       setSubject('');
       setStartsAt('');
-      load();
+
+      await load();
+    } catch (e) {
+      setError(e.message);
+    }
+  };
+
+  // Faculty can delete a class.
+  const deleteClass = async (item) => {
+    if (!isTeacher) return;
+
+    const confirmed = window.confirm(
+      `Are you sure you want to delete the class "${item.title}"? This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await request(`/api/classes/${item.id}`, {
+        method: 'DELETE',
+      });
+
+      setItems((current) =>
+        current.filter((x) => x.id !== item.id)
+      );
+
+      setNotice('Class deleted successfully.');
     } catch (e) {
       setError(e.message);
     }
@@ -1710,6 +1757,7 @@ function Classroom({
             <span className="material-symbols-rounded">
               add_to_queue
             </span>
+
             <div>
               <b>Schedule a class</b>
               <small>
@@ -1743,7 +1791,7 @@ function Classroom({
               onChange={(e) => setStartsAt(e.target.value)}
             />
 
-            <button className="btn btn-primary">
+            <button className="btn btn-primary" type="submit">
               Schedule class
             </button>
           </div>
@@ -1757,19 +1805,26 @@ function Classroom({
               ? 'Your campus classes'
               : 'Classes to join'}
           </h2>
+
           <p>
             Join a class using a room invitation from your teacher.
           </p>
         </div>
       </div>
 
-      {items.length ? (
+      {loading ? (
+        <div className="loading-box">
+          Loading classes…
+        </div>
+      ) : items.length > 0 ? (
         <div className="session-grid">
           {items.map((x) => (
             <ClassRoomCard
               key={x.id}
               item={x}
               onJoin={onJoin}
+              isTeacher={isTeacher}
+              onDelete={deleteClass}
             />
           ))}
         </div>
@@ -1778,7 +1833,9 @@ function Classroom({
           <span className="material-symbols-rounded">
             school
           </span>
+
           <h3>No classes scheduled yet</h3>
+
           <p>
             {isTeacher
               ? 'Create the first online class for your learners.'
@@ -1795,7 +1852,6 @@ function Classroom({
     </>
   );
 }
-
 
 // =====================================================
 // FACULTY MEETINGS
