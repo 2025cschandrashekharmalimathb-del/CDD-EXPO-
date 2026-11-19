@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 const API = import.meta.env.VITE_API_URL || '';
@@ -109,12 +108,11 @@ function App() {
       );
   }, [user, request]);
 
-  // Automatically clear notifications.
+  // Automatically clear status messages.
   useEffect(() => {
     if (!notice) return undefined;
 
     const timer = setTimeout(() => setNotice(''), 4500);
-
     return () => clearTimeout(timer);
   }, [notice]);
 
@@ -151,14 +149,14 @@ function App() {
 
   return (
     <div className="app-frame">
-
-      {/* SIDEBAR */}
       <aside className="app-sidebar">
-
         <a
           className="brand"
           href="#home"
-          onClick={() => setPage('home')}
+          onClick={(event) => {
+            event.preventDefault();
+            setPage('home');
+          }}
         >
           <span className="brand-mark">C</span>
           <span>
@@ -166,18 +164,14 @@ function App() {
           </span>
         </a>
 
-        <div className="sidebar-caption">
-          CAMPUS SPACE
-        </div>
+        <div className="sidebar-caption">CAMPUS SPACE</div>
 
         <nav className="side-links" aria-label="Main menu">
           {pages.map(([id, icon, label]) => (
             <button
               key={id}
               className={
-                page === id
-                  ? 'side-link active'
-                  : 'side-link'
+                page === id ? 'side-link active' : 'side-link'
               }
               onClick={() => {
                 setPage(id);
@@ -199,7 +193,6 @@ function App() {
         </nav>
 
         <div className="sidebar-bottom">
-
           <div className="help-card">
             <span className="material-symbols-rounded">
               waving_hand
@@ -223,9 +216,7 @@ function App() {
 
             <div>
               <b>{user.name}</b>
-              <small>
-                {isTeacher ? 'Faculty' : user.role}
-              </small>
+              <small>{isTeacher ? 'Faculty' : user.role}</small>
             </div>
 
             <button
@@ -237,16 +228,11 @@ function App() {
               </span>
             </button>
           </div>
-
         </div>
       </aside>
 
-      {/* MAIN CONTENT */}
       <main className="main-area">
-
-        {/* TOPBAR */}
         <header className="topbar">
-
           <div className="mobile-brand">
             <span className="brand-mark">C</span>
             Campus Commons
@@ -257,7 +243,6 @@ function App() {
           </div>
 
           <div className="top-actions">
-
             <button
               className="theme-toggle"
               onClick={() =>
@@ -294,13 +279,10 @@ function App() {
             <span className="avatar top-avatar">
               {user.name?.[0]?.toUpperCase()}
             </span>
-
           </div>
         </header>
 
-        {/* PAGE CONTENT */}
         <div className="content-wrap">
-
           {notice && (
             <div
               className="alert alert-success py-2"
@@ -387,17 +369,14 @@ function App() {
               setError={setError}
             />
           )}
-
         </div>
 
         <footer className="app-footer">
           Campus Commons <span>·</span>
           Learn together, wherever you are.
         </footer>
-
       </main>
 
-      {/* VIDEO ROOM */}
       {room && (
         <VideoRoom
           code={room}
@@ -407,7 +386,6 @@ function App() {
           setError={setError}
         />
       )}
-
     </div>
   );
 }
@@ -459,7 +437,6 @@ function Profile({ user, request, setError }) {
       />
 
       <section className="profile-card">
-
         <div className="profile-avatar">
           {user.name?.[0]?.toUpperCase()}
         </div>
@@ -468,15 +445,12 @@ function Profile({ user, request, setError }) {
           <h2>{user.name}</h2>
           <p>{isFaculty ? 'Faculty Member' : 'Student'}</p>
         </div>
-
       </section>
 
       <section className="profile-details">
-
         <h2>Personal Information</h2>
 
         <div className="profile-info-grid">
-
           <div>
             <small>Full Name</small>
             <b>{user.name}</b>
@@ -501,20 +475,16 @@ function Profile({ user, request, setError }) {
             <small>Account Type</small>
             <b>{user.role}</b>
           </div>
-
         </div>
       </section>
 
       <section className="profile-details">
-
         <h2>My Active Reservations</h2>
 
         {loading ? (
           <p>Loading reservations...</p>
         ) : reservations.length > 0 ? (
-
           <div className="profile-reservations">
-
             {reservations.map((item) => (
               <div
                 className="profile-reservation"
@@ -534,13 +504,10 @@ function Profile({ user, request, setError }) {
                 </span>
               </div>
             ))}
-
           </div>
-
         ) : (
           <p>You currently have no active reservations.</p>
         )}
-
       </section>
     </>
   );
@@ -592,9 +559,7 @@ function AuthScreen({ request, onLogin }) {
 
   return (
     <main className="auth-screen">
-
       <section className="auth-visual">
-
         <a className="brand auth-brand" href="#">
           <span className="brand-mark">C</span>
           <span>
@@ -603,7 +568,6 @@ function AuthScreen({ request, onLogin }) {
         </a>
 
         <div className="auth-visual-copy">
-
           <span className="eyebrow">
             YOUR CAMPUS, CONNECTED
           </span>
@@ -620,7 +584,6 @@ function AuthScreen({ request, onLogin }) {
           </p>
 
           <div className="visual-cards">
-
             <div className="visual-card visual-one">
               <span className="material-symbols-rounded">
                 video_call
@@ -636,27 +599,23 @@ function AuthScreen({ request, onLogin }) {
               <b>Curiosity, answered</b>
               <small>Your AI learning companion</small>
             </div>
-
           </div>
         </div>
 
         <div className="visual-orbit orbit-a" />
         <div className="visual-orbit orbit-b" />
-
       </section>
 
       <section className="auth-panel-wrap">
-
         <div className="auth-panel">
-
           <div className="role-pills">
-
             {[
               ['student', 'school'],
               ['teacher', 'cast_for_education'],
             ].map(([r, icon]) => (
               <button
                 key={r}
+                type="button"
                 className={role === r ? 'selected' : ''}
                 onClick={() => {
                   setRole(r);
@@ -669,11 +628,9 @@ function AuthScreen({ request, onLogin }) {
                 {r === 'teacher' ? 'Faculty' : 'Student'}
               </button>
             ))}
-
           </div>
 
           <div className="auth-heading">
-
             <span className="eyebrow">
               {role === 'teacher'
                 ? 'FACULTY'
@@ -691,11 +648,9 @@ function AuthScreen({ request, onLogin }) {
                 ? 'Sign in to return to your learning space.'
                 : 'A connected campus experience starts here.'}
             </p>
-
           </div>
 
           <form onSubmit={submit}>
-
             {mode === 'register' && (
               <>
                 <label>Full name</label>
@@ -789,16 +744,15 @@ function AuthScreen({ request, onLogin }) {
 
               <span>→</span>
             </button>
-
           </form>
 
           <p className="auth-switch">
-
             {mode === 'login'
               ? 'New here?'
               : 'Already have an account?'}
 
             <button
+              type="button"
               onClick={() => {
                 setMode(
                   mode === 'login' ? 'register' : 'login'
@@ -810,7 +764,6 @@ function AuthScreen({ request, onLogin }) {
                 ? 'Create an account'
                 : 'Sign in'}
             </button>
-
           </p>
 
           <div className="privacy-note">
@@ -819,9 +772,7 @@ function AuthScreen({ request, onLogin }) {
             </span>
             Your password is encrypted before it is stored.
           </div>
-
         </div>
-
       </section>
     </main>
   );
@@ -861,9 +812,7 @@ function Overview({ user, isTeacher, onNavigate }) {
   return (
     <>
       <section className="welcome-banner">
-
         <div className="welcome-text">
-
           <span className="eyebrow">
             {isTeacher ? 'TEACHING SPACE' : 'YOUR LEARNING SPACE'}
           </span>
@@ -891,7 +840,6 @@ function Overview({ user, isTeacher, onNavigate }) {
             {isTeacher ? 'Plan a class' : 'Ask your assistant'}
             <span>→</span>
           </button>
-
         </div>
 
         <div className="welcome-art">
@@ -899,7 +847,6 @@ function Overview({ user, isTeacher, onNavigate }) {
           <div className="art-book">✦</div>
           <div className="art-orbit" />
         </div>
-
       </section>
 
       <PageHeader
@@ -909,7 +856,6 @@ function Overview({ user, isTeacher, onNavigate }) {
       />
 
       <div className="quick-grid">
-
         {quick.map(([id, icon, title, copy], i) => (
           <button
             key={id}
@@ -926,13 +872,10 @@ function Overview({ user, isTeacher, onNavigate }) {
             <small>{copy}</small>
           </button>
         ))}
-
       </div>
 
       <div className="two-column mt-4">
-
         <section className="info-card">
-
           <div className="card-heading">
             <div>
               <span className="eyebrow">HOW IT HELPS</span>
@@ -973,7 +916,6 @@ function Overview({ user, isTeacher, onNavigate }) {
               </small>
             </div>
           </div>
-
         </section>
 
         <section className="quote-card">
@@ -987,10 +929,8 @@ function Overview({ user, isTeacher, onNavigate }) {
           </blockquote>
 
           <small>— B. B. King</small>
-
           <div className="quote-decoration">✳</div>
         </section>
-
       </div>
     </>
   );
@@ -1000,6 +940,9 @@ function Overview({ user, isTeacher, onNavigate }) {
 // =====================================================
 // RESOURCE BOARD
 // =====================================================
+
+
+
 
 function ResourceBoard({
   user,
@@ -1011,13 +954,24 @@ function ResourceBoard({
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('All');
+  const [statusFilter, setStatusFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [name, setName] = useState('');
   const [category, setCategory] = useState('Lab Equipment');
+  const [activity, setActivity] = useState([]);
+  const [selectedResource, setSelectedResource] = useState(null);
 
   const load = useCallback(() => {
     return request('/api/resources')
-      .then(setItems)
+      .then((data) => {
+        setItems(data);
+
+        // Refresh the selected resource with the latest server data.
+        setSelectedResource((current) => {
+          if (!current) return null;
+          return data.find((x) => x.id === current.id) || null;
+        });
+      })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [request, setError]);
@@ -1044,6 +998,9 @@ function ResourceBoard({
   };
 
   const book = async (item) => {
+    const isReturning =
+      Number(item.booked_by) === Number(user.id);
+
     try {
       const row = await request(
         `/api/resources/${item.id}/book`,
@@ -1056,15 +1013,299 @@ function ResourceBoard({
       setItems((current) =>
         current.map((x) => x.id === row.id ? row : x)
       );
+
+      setSelectedResource((current) =>
+        current && current.id === row.id ? row : current
+      );
+
+      setActivity((current) => [
+        {
+          id: `${Date.now()}-${item.id}`,
+          name: item.name,
+          action: isReturning ? 'Returned' : 'Reserved',
+          time: new Date().toLocaleString(),
+        },
+        ...current,
+      ].slice(0, 8));
+
+      setNotice(
+        isReturning
+          ? 'Resource returned successfully.'
+          : 'Resource reserved successfully.'
+      );
+
+      return row;
     } catch (e) {
       setError(e.message);
+      return null;
     }
   };
 
-  const shown = items.filter((x) =>
-    (filter === 'All' || x.category === filter) &&
-    x.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const availableCount = items.filter(
+    (x) => x.status === 'Available'
+  ).length;
+
+  const reservedCount = items.filter(
+    (x) => x.status === 'Reserved'
+  ).length;
+
+  const unavailableCount = items.filter(
+    (x) => x.status === 'Unavailable'
+  ).length;
+
+  const shown = items.filter((x) => {
+    const matchesCategory =
+      filter === 'All' || x.category === filter;
+
+    const matchesSearch =
+      x.name.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === 'All' ||
+      x.status === statusFilter;
+
+    return matchesCategory && matchesSearch && matchesStatus;
+  });
+
+  const getResourceIcon = (resource) => {
+    if (resource.category === 'Study Room') return 'chair';
+    if (resource.category === 'Study Material') return 'menu_book';
+    return 'biotech';
+  };
+
+  const getResourceDescription = (resource) => {
+    if (resource.category === 'Study Room') {
+      return 'A shared campus study space for individual learning, group discussions and academic activities.';
+    }
+
+    if (resource.category === 'Study Material') {
+      return 'A learning resource provided to support academic preparation, revision and self-study.';
+    }
+
+    return 'Campus laboratory equipment made available for practical learning, experiments and academic activities.';
+  };
+
+  // ==========================================
+  // FULL-PAGE RESOURCE DETAILS VIEW
+  // ==========================================
+
+  if (selectedResource) {
+    const isOwner =
+      Number(selectedResource.booked_by) === Number(user.id);
+
+    const isAvailable =
+      selectedResource.status === 'Available';
+
+    return (
+      <div className="resource-detail-page">
+
+        <button
+          type="button"
+          className="btn btn-outline-secondary mb-4"
+          onClick={() => setSelectedResource(null)}
+        >
+          ← Back to Resource Board
+        </button>
+
+        <div className="card border-0 shadow-sm overflow-hidden">
+
+          {/* Resource banner */}
+          <div
+            className="p-4 p-md-5"
+            style={{
+              background: 'var(--bs-tertiary-bg)',
+            }}
+          >
+            <div className="d-flex flex-wrap justify-content-between align-items-start gap-3">
+
+              <div>
+                <span className="badge text-bg-primary mb-3">
+                  {selectedResource.category}
+                </span>
+
+                <h1 className="mb-2">
+                  {selectedResource.name}
+                </h1>
+
+                <p className="text-muted mb-0">
+                  Resource ID: {selectedResource.id}
+                </p>
+              </div>
+
+              <span
+                className={`badge fs-6 ${
+                  isAvailable
+                    ? 'text-bg-success'
+                    : selectedResource.status === 'Unavailable'
+                      ? 'text-bg-danger'
+                      : 'text-bg-warning'
+                }`}
+              >
+                {selectedResource.status || 'Unknown'}
+              </span>
+            </div>
+          </div>
+
+          {/* Resource information */}
+          <div className="card-body p-4 p-md-5">
+
+            <div className="row g-4">
+
+              <div className="col-12 col-lg-7">
+
+                <h4 className="mb-3">
+                  Resource information
+                </h4>
+
+                <div
+                  className="rounded-4 p-4 mb-4"
+                  style={{
+                    background: 'var(--bs-tertiary-bg)',
+                  }}
+                >
+                  <div className="d-flex align-items-center gap-3 mb-3">
+                    <span className="material-symbols-rounded fs-1">
+                      {getResourceIcon(selectedResource)}
+                    </span>
+
+                    <div>
+                      <h5 className="mb-1">
+                        {selectedResource.name}
+                      </h5>
+
+                      <span className="text-muted small">
+                        {selectedResource.category}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-muted mb-0">
+                    {getResourceDescription(selectedResource)}
+                  </p>
+                </div>
+
+                <h5 className="mb-3">
+                  Resource details
+                </h5>
+
+                <div className="table-responsive">
+                  <table className="table align-middle">
+                    <tbody>
+                      <tr>
+                        <th>Resource ID</th>
+                        <td>{selectedResource.id}</td>
+                      </tr>
+
+                      <tr>
+                        <th>Resource name</th>
+                        <td>{selectedResource.name}</td>
+                      </tr>
+
+                      <tr>
+                        <th>Category</th>
+                        <td>{selectedResource.category}</td>
+                      </tr>
+
+                      <tr>
+                        <th>Availability</th>
+                        <td>{selectedResource.status || 'Unknown'}</td>
+                      </tr>
+
+                      <tr>
+                        <th>Reserved by</th>
+                        <td>
+                          {selectedResource.booked_by_name || 'Nobody'}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+              </div>
+
+              {/* Booking information */}
+              <div className="col-12 col-lg-5">
+
+                <div className="card h-100">
+                  <div className="card-body p-4">
+
+                    <h5 className="mb-3">
+                      Booking information
+                    </h5>
+
+                    <div className="mb-3">
+                      <span className="text-muted small">
+                        CURRENT STATUS
+                      </span>
+
+                      <h4 className="mt-1">
+                        {selectedResource.status || 'Unknown'}
+                      </h4>
+                    </div>
+
+                    <hr />
+
+                    <div className="mb-4">
+                      <span className="text-muted small">
+                        RESERVED BY
+                      </span>
+
+                      <h6 className="mt-2">
+                        {selectedResource.booked_by_name || 'Nobody'}
+                      </h6>
+                    </div>
+
+                    {!isTeacher && (
+                      <button
+                        type="button"
+                        className="btn btn-primary w-100"
+                        disabled={
+                          !isAvailable && !isOwner
+                        }
+                        onClick={() => book(selectedResource)}
+                      >
+                        {isAvailable
+                          ? 'Reserve this resource'
+                          : isOwner
+                            ? 'Return this resource'
+                            : 'Currently in use'}
+                      </button>
+                    )}
+
+                    {isTeacher && (
+                      <div className="alert alert-info mb-0">
+                        Teacher view: You can monitor this resource's availability.
+                      </div>
+                    )}
+
+                    <p className="text-muted small mt-3 mb-0">
+                      Resource reservations are processed through
+                      the campus resource system.
+                    </p>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          className="btn btn-outline-secondary mt-4"
+          onClick={() => setSelectedResource(null)}
+        >
+          ← Back to Resource Board
+        </button>
+
+      </div>
+    );
+  }
+
+  // ==========================================
+  // RESOURCE BOARD VIEW
+  // ==========================================
 
   return (
     <>
@@ -1082,9 +1323,48 @@ function ResourceBoard({
         }
       />
 
+      {/* Availability overview */}
+      <div className="row g-3 mb-4">
+
+        <div className="col-6 col-lg-3">
+          <div className="card h-100 p-3">
+            <div className="text-muted small">Total resources</div>
+            <h2 className="mb-0 mt-2">{items.length}</h2>
+          </div>
+        </div>
+
+        <div className="col-6 col-lg-3">
+          <div className="card h-100 p-3">
+            <div className="text-muted small">Available</div>
+            <h2 className="mb-0 mt-2 text-success">
+              {availableCount}
+            </h2>
+          </div>
+        </div>
+
+        <div className="col-6 col-lg-3">
+          <div className="card h-100 p-3">
+            <div className="text-muted small">Reserved</div>
+            <h2 className="mb-0 mt-2 text-warning">
+              {reservedCount}
+            </h2>
+          </div>
+        </div>
+
+        <div className="col-6 col-lg-3">
+          <div className="card h-100 p-3">
+            <div className="text-muted small">Unavailable</div>
+            <h2 className="mb-0 mt-2 text-danger">
+              {unavailableCount}
+            </h2>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Add resource */}
       {isTeacher && (
         <form className="add-resource-bar" onSubmit={add}>
-
           <input
             className="form-control"
             required
@@ -1104,13 +1384,13 @@ function ResourceBoard({
             <option>Study Material</option>
           </select>
 
-          <button className="btn btn-primary">
+          <button className="btn btn-primary" type="submit">
             ＋ Add resource
           </button>
-
         </form>
       )}
 
+      {/* Category filters and search */}
       <div className="resource-tools">
 
         <div className="filter-group">
@@ -1121,6 +1401,7 @@ function ResourceBoard({
             'Study Material',
           ].map((x) => (
             <button
+              type="button"
               key={x}
               className={filter === x ? 'filter-active' : ''}
               onClick={() => setFilter(x)}
@@ -1139,6 +1420,31 @@ function ResourceBoard({
 
       </div>
 
+      {/* Status filters */}
+      <div className="d-flex flex-wrap gap-2 align-items-center mb-4">
+
+        <strong className="small me-2">
+          Availability:
+        </strong>
+
+        {['All', 'Available', 'Reserved', 'Unavailable'].map((x) => (
+          <button
+            type="button"
+            key={x}
+            className={`btn btn-sm ${
+              statusFilter === x
+                ? 'btn-primary'
+                : 'btn-outline-secondary'
+            }`}
+            onClick={() => setStatusFilter(x)}
+          >
+            {x}
+          </button>
+        ))}
+
+      </div>
+
+      {/* Resource cards */}
       {loading ? (
         <div className="loading-box">
           Loading resources…
@@ -1150,13 +1456,12 @@ function ResourceBoard({
             <article
               className={`resource-tile tile-${i % 4}`}
               key={x.id}
+              onClick={() => setSelectedResource(x)}
+              style={{ cursor: 'pointer' }}
             >
+
               <span className="material-symbols-rounded tile-art">
-                {x.category === 'Study Room'
-                  ? 'chair'
-                  : x.category === 'Study Material'
-                    ? 'menu_book'
-                    : 'biotech'}
+                {getResourceIcon(x)}
               </span>
 
               <span className="resource-category">
@@ -1166,6 +1471,7 @@ function ResourceBoard({
               <h3>{x.name}</h3>
 
               <div className="availability">
+
                 <span
                   className={
                     x.status === 'Available'
@@ -1174,21 +1480,26 @@ function ResourceBoard({
                   }
                 />
 
-                {x.status === 'Available'
-                  ? 'Available'
-                  : `Reserved${x.booked_by_name
-                    ? ` · ${x.booked_by_name}`
-                    : ''}`}
+                {x.status || 'Unknown'}
+
+                {x.status === 'Reserved' && x.booked_by_name
+                  ? ` · ${x.booked_by_name}`
+                  : ''}
+
               </div>
 
               {!isTeacher && (
                 <button
+                  type="button"
                   className="btn btn-outline-primary w-100 mt-3"
                   disabled={
                     x.status !== 'Available' &&
                     Number(x.booked_by) !== Number(user.id)
                   }
-                  onClick={() => book(x)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    book(x);
+                  }}
                 >
                   {x.status === 'Available'
                     ? 'Reserve this'
@@ -1197,6 +1508,10 @@ function ResourceBoard({
                       : 'In use'}
                 </button>
               )}
+
+              <div className="small text-muted mt-2">
+                View full details →
+              </div>
 
             </article>
           ))}
@@ -1209,13 +1524,90 @@ function ResourceBoard({
           <span className="material-symbols-rounded">
             search_off
           </span>
+
           <h3>No resources found</h3>
           <p>Try a different search or category.</p>
         </div>
       )}
+
+      {/* Recent booking activity */}
+      <section className="mt-5">
+
+        <div className="d-flex justify-content-between align-items-center mb-3">
+
+          <div>
+            <span className="text-muted small">
+              RESOURCE ACTIVITY
+            </span>
+
+            <h3 className="mt-1">
+              Recent booking history
+            </h3>
+          </div>
+
+          <span className="badge text-bg-light">
+            {activity.length} activities
+          </span>
+
+        </div>
+
+        {activity.length === 0 ? (
+          <div className="card p-4 text-center">
+
+            <span className="material-symbols-rounded fs-1 text-muted">
+              history
+            </span>
+
+            <h5 className="mt-2">
+              No recent activity
+            </h5>
+
+            <p className="text-muted mb-0">
+              Reservations and returns made during this session
+              will appear here.
+            </p>
+
+          </div>
+        ) : (
+          <div className="card p-3">
+
+            {activity.map((entry) => (
+              <div
+                key={entry.id}
+                className="d-flex justify-content-between align-items-center gap-3 py-3 border-bottom"
+              >
+
+                <div>
+                  <strong>{entry.name}</strong>
+
+                  <div className="small text-muted">
+                    {entry.time}
+                  </div>
+                </div>
+
+                <span
+                  className={`badge ${
+                    entry.action === 'Reserved'
+                      ? 'text-bg-warning'
+                      : 'text-bg-success'
+                  }`}
+                >
+                  {entry.action}
+                </span>
+
+              </div>
+            ))}
+
+          </div>
+        )}
+
+      </section>
     </>
   );
 }
+
+
+
 
 
 // =====================================================
@@ -1225,7 +1617,6 @@ function ResourceBoard({
 function ClassRoomCard({ item, onJoin }) {
   return (
     <article className="session-card">
-
       <div className="session-card-top">
         <span className="session-icon material-symbols-rounded">
           cast_for_education
@@ -1250,11 +1641,9 @@ function ClassRoomCard({ item, onJoin }) {
       >
         Join class <span>↗</span>
       </button>
-
     </article>
   );
 }
-
 
 function Classroom({
   user,
@@ -1317,7 +1706,6 @@ function Classroom({
 
       {isTeacher && (
         <form className="schedule-panel" onSubmit={create}>
-
           <div className="schedule-title">
             <span className="material-symbols-rounded">
               add_to_queue
@@ -1331,7 +1719,6 @@ function Classroom({
           </div>
 
           <div className="schedule-fields">
-
             <input
               className="form-control"
               required
@@ -1359,7 +1746,6 @@ function Classroom({
             <button className="btn btn-primary">
               Schedule class
             </button>
-
           </div>
         </form>
       )}
@@ -1466,7 +1852,6 @@ function FamilyMeetings({
       />
 
       <form className="schedule-panel" onSubmit={create}>
-
         <div className="schedule-title">
           <span className="material-symbols-rounded">
             groups
@@ -1481,7 +1866,6 @@ function FamilyMeetings({
         </div>
 
         <div className="schedule-fields">
-
           <input
             className="form-control"
             required
@@ -1501,7 +1885,6 @@ function FamilyMeetings({
           <button className="btn btn-primary">
             Schedule call
           </button>
-
         </div>
       </form>
 
@@ -1514,13 +1897,11 @@ function FamilyMeetings({
 
       {items.length ? (
         <div className="session-grid">
-
           {items.map((x) => (
             <article
               className="session-card meeting-card"
               key={x.id}
             >
-
               <div className="session-card-top">
                 <span className="session-icon material-symbols-rounded">
                   diversity_3
@@ -1546,10 +1927,8 @@ function FamilyMeetings({
               >
                 Join call <span>↗</span>
               </button>
-
             </article>
           ))}
-
         </div>
       ) : (
         <div className="empty-state">
@@ -1626,7 +2005,6 @@ function Translator({ request, setError, configured }) {
       />
 
       <div className="translator-card">
-
         <div className="translate-language">
           <label>Translate into</label>
 
@@ -1656,7 +2034,6 @@ function Translator({ request, setError, configured }) {
         </div>
 
         <div className="translator-columns">
-
           <div className="translate-pane">
             <div className="pane-head">
               Your text <span>Auto detect</span>
@@ -1697,7 +2074,6 @@ function Translator({ request, setError, configured }) {
               </button>
             )}
           </div>
-
         </div>
 
         <button
@@ -1718,7 +2094,6 @@ function Translator({ request, setError, configured }) {
           Translation runs through the campus self-hosted
           translation service. No Google key is required.
         </p>
-
       </div>
     </>
   );
@@ -1810,12 +2185,11 @@ function Assistant({ request, setError, aiConfigured }) {
     recognition.start();
   };
 
-  const speak = (text) => {
+  const speak = (value) => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
-
       window.speechSynthesis.speak(
-        new SpeechSynthesisUtterance(text)
+        new SpeechSynthesisUtterance(value)
       );
     }
   };
@@ -1829,11 +2203,8 @@ function Assistant({ request, setError, aiConfigured }) {
       />
 
       <div className="assistant-layout">
-
         <div className="chat-card">
-
           <div className="chat-top">
-
             <span className="assistant-orb material-symbols-rounded">
               auto_awesome
             </span>
@@ -1853,11 +2224,9 @@ function Assistant({ request, setError, aiConfigured }) {
                   ? 'AI CONNECTED'
                   : 'BUILT-IN MODE'}
             </span>
-
           </div>
 
           <div className="chat-messages">
-
             {messages.map((m, i) => (
               <div
                 className={`chat-message ${m.role}`}
@@ -1894,7 +2263,6 @@ function Assistant({ request, setError, aiConfigured }) {
             )}
 
             <div ref={bottom} />
-
           </div>
 
           <form
@@ -1904,7 +2272,6 @@ function Assistant({ request, setError, aiConfigured }) {
               send();
             }}
           >
-
             <button
               type="button"
               className={
@@ -1935,13 +2302,10 @@ function Assistant({ request, setError, aiConfigured }) {
                 arrow_upward
               </span>
             </button>
-
           </form>
-
         </div>
 
         <aside className="suggestion-panel">
-
           <span className="eyebrow">TRY ASKING</span>
 
           {[
@@ -1972,9 +2336,7 @@ function Assistant({ request, setError, aiConfigured }) {
               configures its provider key.
             </small>
           </div>
-
         </aside>
-
       </div>
     </>
   );
@@ -2179,16 +2541,13 @@ function VideoRoom({
 
               await pc.setRemoteDescription(msg.sdp);
 
-              for (
-                const candidate of ice.current.get(msg.from) || []
-              ) {
+              for (const candidate of ice.current.get(msg.from) || []) {
                 await pc.addIceCandidate(candidate);
               }
 
               ice.current.delete(msg.from);
 
               const answer = await pc.createAnswer();
-
               await pc.setLocalDescription(answer);
 
               signal(msg.from, {
@@ -2201,9 +2560,7 @@ function VideoRoom({
               if (pc) {
                 await pc.setRemoteDescription(msg.sdp);
 
-                for (
-                  const candidate of ice.current.get(msg.from) || []
-                ) {
+                for (const candidate of ice.current.get(msg.from) || []) {
                   await pc.addIceCandidate(candidate);
                 }
 
@@ -2251,7 +2608,6 @@ function VideoRoom({
             setStatus('Video room connection closed.');
           }
         };
-
       } catch (e) {
         if (!alive) return;
 
@@ -2292,7 +2648,6 @@ function VideoRoom({
 
       stream?.getTracks().forEach((track) => track.stop());
     };
-
   }, [code, token, retry, setError]);
 
   const toggleTrack = (kind) => {
@@ -2348,7 +2703,6 @@ function VideoRoom({
 
         setSharing(false);
       };
-
     } catch (e) {
       if (e.name !== 'NotAllowedError') {
         setError(e.message);
@@ -2358,11 +2712,8 @@ function VideoRoom({
 
   return (
     <div className="video-overlay">
-
       <div className="video-shell">
-
         <header className="video-header">
-
           <div>
             <span className="live-dot" />
             Campus Commons
@@ -2390,11 +2741,9 @@ function VideoRoom({
           >
             ×
           </button>
-
         </header>
 
         <div className="video-stage">
-
           <div className="video-tile local-tile">
             <video
               ref={localRef}
@@ -2416,11 +2765,9 @@ function VideoRoom({
               />
             )
           )}
-
         </div>
 
         <div className="video-controls">
-
           <button
             onClick={() => toggleTrack('audio')}
             className={muted ? 'control-off' : ''}
@@ -2464,7 +2811,6 @@ function VideoRoom({
             </span>
             <small>Leave call</small>
           </button>
-
         </div>
 
         <div className="video-status">
@@ -2486,7 +2832,6 @@ function VideoRoom({
           <span>·</span>
           Peer-to-peer encrypted transport
         </div>
-
       </div>
     </div>
   );
